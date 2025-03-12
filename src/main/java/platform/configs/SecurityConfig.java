@@ -1,6 +1,9 @@
 package platform.configs;
 
 
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -100,5 +103,9 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
+    }
+    @Bean
+    public static PropertyPlaceholderAutoConfiguration propertyPlaceholderAutoConfiguration() {
+        return new PropertyPlaceholderAutoConfiguration();//PropertySourcesPlaceholderConfigurer();
     }
 }

@@ -36,9 +36,9 @@ spring:
 registration:
   activate:
     minute-expiration: 5
-    url: "/activate?code="
+    url: /activate?code=
   change-password:
-    url: "/change?code="
+    url: /change?code=
 frontend:
   url: http://localhost:4200
 email:
