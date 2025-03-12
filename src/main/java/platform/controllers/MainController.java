@@ -24,6 +24,7 @@ public class MainController {
     public String adminData() {
         return "Admin data";
     }
+
     @GetMapping("/admin/catalog")
     public String adminCatalogData() {
         return "Admin catalog data";
