@@ -3,7 +3,7 @@ package platform.dtos;
 import lombok.Data;
 
 @Data
-public class RememberPasswordDto {
+public class JwtRequest {
+    private String username;
     private String password;
-    private String code;
 }
