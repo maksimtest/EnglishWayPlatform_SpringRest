@@ -47,10 +47,16 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/secured").authenticated()
+                        .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/info").hasAnyRole("MANAGER", "ADMIN")
-                        .requestMatchers("/admin").hasRole("ADMIN")
-                        //.anyRequest().authenticated()
-                        .anyRequest().permitAll()
+                        .requestMatchers("/admin").hasAnyRole(
+                                "MANAGER",
+                                "TEACHER",
+                                "CONTENT_MANAGER",
+                                "SUPER_CONTENT_MANAGER",
+                                "ADMIN")
+                        .anyRequest().authenticated()
+                        //.anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptingHandling -> exceptingHandling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
