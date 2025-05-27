@@ -1,6 +1,5 @@
 package platform.configs;
 
-
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -9,7 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import platform.utils.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,12 +38,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 System.out.println("Время жизни токена вышло");
                 // TODO log doesn't work
                 log.debug("Время жизни токена вышло");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             } catch (Exception e) {
                 // TODO SignatureException is deprecated that`s why need change Exception to more really
 //            } catch (SignatureException e) {
                 e.printStackTrace();
                 System.out.println("Подпись неправильная");
                 log.debug("Подпись неправильная");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             }
         }
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
