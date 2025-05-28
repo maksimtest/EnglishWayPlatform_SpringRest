@@ -1,7 +1,12 @@
 package platform.services;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import platform.dtos.RegistrationUserDto;
+import platform.dtos.StudentsDto;
+import platform.entities.Role;
 import platform.entities.User;
+import platform.repositories.RoleRepository;
 import platform.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,7 +20,6 @@ import platform.utils.TimeUtils;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,7 +29,13 @@ public class UserService implements UserDetailsService {
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
     private final TimeUtils timesUtil;
+    private final RoleRepository roleRepository;
 
+    public User getCurrentUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        return userRepository.findByUsername(username).orElseThrow();
+    }
 
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
@@ -34,11 +44,27 @@ public class UserService implements UserDetailsService {
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
-
+    public List<User> listStudents(){
+        List<User> users = userRepository.findAllByOrderByIdDesc()
+                .stream()
+                .filter(this::isStudent)
+                .toList();
+        return users;
+    }
     public Optional<User> findByCode(String code) {
         return userRepository.findByActivationCode(code);
     }
-
+    public User findById(Long userId) {
+        return userRepository.findById(userId).orElseThrow();
+    }
+    public boolean isStudent(User user){
+        for(Role role: user.getRoles()){
+            if(role.getName().equalsIgnoreCase("ROLE_STUDENT")){
+                return true;
+            }
+        }
+        return false;
+    }
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -56,7 +82,6 @@ public class UserService implements UserDetailsService {
                         .collect(Collectors.toList())
         );
     }
-
     public User createNewUser(RegistrationUserDto registrationUserDto, String code) {
         User user = new User();
         user.setName(registrationUserDto.getName());
@@ -69,6 +94,18 @@ public class UserService implements UserDetailsService {
         user.setRoles(List.of(roleService.getUserRole()));
         return userRepository.save(user);
     }
+    public User quickCreateNewUser(RegistrationUserDto registrationUserDto) {
+        User user = new User();
+        user.setName(registrationUserDto.getName());
+        user.setUsername(registrationUserDto.getEmail());
+        user.setEmail(registrationUserDto.getEmail());
+        user.setPassword(passwordEncoder.encode(registrationUserDto.getPassword()));
+        user.setActive(true);
+        //user.setActivationCode(code);
+        //user.setCodeExpiration(timesUtil.getRegMinuteExpiration());
+        user.setRoles(List.of(roleService.getUserRole()));
+        return userRepository.save(user);
+    }
     public void changePasswordWithoutSaving(User user, String password) {
         user.setPassword(passwordEncoder.encode(password));
     }
@@ -76,6 +113,7 @@ public class UserService implements UserDetailsService {
     public boolean setActivateCode(User user, String code) {
         user.setActivationCode(code);
         user.setCodeExpiration(code == null ? null : timesUtil.getRegMinuteExpiration());
-        return userRepository.save(user) != null;
+        userRepository.save(user);
+        return true;
     }
 }
