@@ -8,44 +8,48 @@ import platform.dtos.UserDto;
 import platform.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import platform.utils.CodeUtil;
+
 
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
 
-    @PostMapping("/auth")
+    @PostMapping("/auth/login")
     public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authRequest) {
-        System.out.println("AuthController.auth");
-        return authService.createAuthToken(authRequest);
+        System.out.println("AuthController.auth, authRequest="+authRequest);
+        ResponseEntity<?> result = authService.createAuthToken(authRequest);
+        System.out.println("AuthController.auth, result="+result);
+        return result;
     }
-    @PostMapping("/reg")
+    @PostMapping("/auth/reg")
     public ResponseEntity<?> createNewUser(@RequestBody RegistrationUserDto registrationUserDto) {
         System.out.println("AuthController.reg");
-        return authService.createNewUser(registrationUserDto);
+        ResponseEntity<?> result = authService.createNewUser(registrationUserDto);
+        System.out.println("AuthController.reg, result="+result);
+        return result;
     }
-    @GetMapping("/activate")
+    @GetMapping("/auth/activate")
     public ResponseEntity<?> activateCode(@RequestParam("code") String activateCode) {
         System.out.println("AuthController.activeCode, activateCode="+activateCode);
         ResponseEntity<?> resp = authService.activateCode(activateCode);
         System.out.println("AuthController.activeCode, resp: " + resp);
         return resp;
     }
-    @PostMapping("/remember")
+    @PostMapping("/auth/remember")
     public ResponseEntity<?> remember(@RequestBody UserDto userDto) {
         String email = userDto.getEmail();
         System.out.println("AuthController.remember, email="+email);
         return authService.rememberPassword(email);
     }
-    @PostMapping("/change-password")
+    @PostMapping("/auth/change-password")
     public ResponseEntity<?> changePassword(@RequestBody RememberPasswordDto rememberPasswordDto) {
         System.out.println("AuthController.changePassword, password="+rememberPasswordDto);
         return authService.changePassword(rememberPasswordDto);
     }
-    @PostMapping("/simple-reg")
-    public ResponseEntity<?> simpleCreateNewUser(@RequestBody RegistrationUserDto registrationUserDto) {
-        System.out.println("AuthController.simpleCreateNewUser");
-        return authService.simpleCreateNewUser(registrationUserDto);
+    @PostMapping("/auth/quick-reg")
+    public ResponseEntity<?> quickCreateNewUser(@RequestBody RegistrationUserDto registrationUserDto) {
+        System.out.println("AuthController.quickCreateNewUser, answers="+registrationUserDto.getCode());
+        return authService.quickCreateUserAfterLevelTest(registrationUserDto);
     }
 }

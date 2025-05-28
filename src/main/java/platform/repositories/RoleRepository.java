@@ -9,5 +9,7 @@ import java.util.Optional;
 @Repository
 public interface RoleRepository extends CrudRepository<Role, Integer> {
     Optional<Role> findByName(String name);
-    Iterable<Role> findAll();
+    default Role getStudentRole(){
+        return findByName("ROLE_ADMIN").orElseThrow();
+    }
 }

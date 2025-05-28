@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import platform.entities.LevelTestResult;
 import platform.entities.User;
 
 import java.io.File;
@@ -38,6 +39,12 @@ public class EmailService {
         String textBody = String.format(text, user.getName(), url);
         send(user.getEmail(), subject, textBody);
     }
+    public void sendMarkOfLevelTest(User user, LevelTestResult result) throws IOException {
+        String subject = "English level";
+        String text = resourceService.readFile("emails/level-test-result.txt");
+        String textBody = String.format(text, user.getName(), result.getLevel().getName());
+        send(user.getEmail(), subject, textBody);
+    }
 
     public void sendCodeAfterRememberPassword(User user, String code) throws IOException {
         String subject = "Reset password on English way platform";
@@ -48,7 +55,7 @@ public class EmailService {
     }
 
     private void send(String toEmail, String subject, String text) throws IOException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-hh-mm-ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-hh-mm-ss");
         String name = "email-" + dateFormat.format(new Date()) + ".txt";
         File file = new File(emailDir, name);
 

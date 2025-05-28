@@ -5,13 +5,16 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "roles")
-public class Role {
+@Table(name="menu_types")
+public class MenuType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
-    @Column(name = "name")
+    @Column
     private String name;
+
+//    @ManyToOne
+//    @JoinColumn(name = "course_id", nullable = true)
+//    private Course course;
 }
