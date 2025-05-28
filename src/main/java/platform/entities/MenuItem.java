@@ -2,33 +2,43 @@ package platform.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
+
+import java.util.Collection;
 
 @Data
-//@Entity
+@Entity
+@Table(name="menu_items")
 public class MenuItem {
-    //    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
-    String name;
+    private String name;
+
+    @Column(name="sort")
+    private int order;
 
     @Column
-    String url;
+    private String url;
 
     @Column
-    String img;
+    private String img;
 
     @Column
-    String title;
+    private String title;
 
-    public MenuItem(String name, String url, String img, String title) {
-        this.name = name;
-        this.url = url;
-        this.img = img;
-        this.title = title;
-    }
-//    @ManyToOne
-//    @JoinColumn(name = "menu_id")
-//    private Menu menu;
+    @ManyToOne
+    @JoinColumn(name="type_id", nullable = true)
+    private MenuType type;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = true)
+    private Role role;
+
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="lesson_id", nullable = true)
+    private Lesson lesson;
 }
