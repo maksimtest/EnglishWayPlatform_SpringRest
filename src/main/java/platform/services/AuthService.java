@@ -5,6 +5,8 @@ import platform.dtos.JwtRequest;
 import platform.dtos.JwtResponse;
 import platform.dtos.RegistrationUserDto;
 import platform.dtos.RememberPasswordDto;
+import platform.entities.LevelTestResult;
+import platform.entities.Role;
 import platform.entities.User;
 import platform.exceptions.ApiExceptionFactory;
 import platform.utils.CodeUtil;
@@ -24,6 +26,8 @@ import platform.utils.TimeUtils;
 @RequiredArgsConstructor
 public class AuthService {
     private final UserService userService;
+    private final DefineLevelTestService defineLevelTestService;
+    private final LevelTestResultService levelTestResultService;
     private final JwtTokenUtils jwtTokenUtils;
     private final AuthenticationManager authenticationManager;
     private final TimeUtils timeUtils;
@@ -31,15 +35,26 @@ public class AuthService {
 
     public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authRequest) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
         } catch (BadCredentialsException e) {
             return ApiExceptionFactory.get(ApiExceptionFactory.INVALID_CREDENTIALS);
         }
-        UserDetails userDetails = userService.loadUserByUsername(authRequest.getUsername());
-        String token = jwtTokenUtils.generateToken(userDetails);
-        return ResponseEntity.ok(new JwtResponse(token));
-    }
+        UserDetails userDetails = userService.loadUserByUsername(authRequest.getEmail());
 
+        String token = jwtTokenUtils.generateToken(userDetails);
+        String redirect = getRedirect(authRequest.getEmail());
+        JwtResponse response = new JwtResponse(token, redirect);
+        return ResponseEntity.ok(response);
+    }
+    public String getRedirect(String username) {
+        User user = userService.findByUsername(username).orElseThrow();
+        for(Role role: user.getRoles()){
+            if(!role.getName().equals("ROLE_USER")){
+                return "admin";
+            }
+        }
+        return "cabinet";
+    }
     public ResponseEntity<?> createNewUser(@RequestBody RegistrationUserDto registrationUserDto) {
         if (userService.findByUsername(registrationUserDto.getUsername()).isPresent()) {
             System.out.println("AuthService, username is present");
@@ -59,20 +74,17 @@ public class AuthService {
         }
         return ApiExceptionFactory.get(ApiExceptionFactory.UNKNOWN_PROBLEM_WITH_REGISTRATION);
     }
-    public ResponseEntity<?> simpleCreateNewUser(@RequestBody RegistrationUserDto registrationUserDto) {
-        if (userService.findByUsername(registrationUserDto.getUsername()).isPresent()) {
-            System.out.println("AuthService, username is present");
-            return ApiExceptionFactory.get(ApiExceptionFactory.USERNAME_ALREADY_EXISTS);
-        }
+    public ResponseEntity<?> quickCreateUserAfterLevelTest(@RequestBody RegistrationUserDto registrationUserDto) {
         if (userService.findByEmail(registrationUserDto.getEmail()).isPresent()) {
             System.out.println("AuthService, email is present");
             return ApiExceptionFactory.get(ApiExceptionFactory.EMAIL_ALREADY_EXISTS);
         }
-        String code = CodeUtil.getCode(true);
         try {
-            User user = userService.createNewUser(registrationUserDto, code);
-            user.setActive(true);
-            userService.setActivateCode(user, null);
+            User user = userService.quickCreateNewUser(registrationUserDto);
+            LevelTestResult result = defineLevelTestService.getLevelTestResultByAnswers(registrationUserDto.getCode());
+            result.setUser(user);
+            emailService.sendMarkOfLevelTest(user, result);
+            levelTestResultService.saveResult(result);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             e.printStackTrace();
