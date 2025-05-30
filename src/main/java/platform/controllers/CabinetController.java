@@ -1,26 +1,24 @@
 package platform.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import platform.dtos.*;
-import platform.entities.Course;
 import platform.services.CabinetService;
 import platform.services.ContentService;
-import platform.services.CourseService;
+import platform.services.ResultService;
 
-import java.security.Principal;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 public class CabinetController {
     private final CabinetService cabinetService;
-    private final CourseService courseService;
+    private final ResultService resultService;
     private final ContentService contentService;
 
     @PostMapping("/inner-page")
@@ -65,13 +63,13 @@ public class CabinetController {
         return lessonContentDto;
     }
     @PostMapping("/cabinet/save-results")
-    public ResultDto getLessons(@RequestBody List<ResultDto> resultsDto) {
+    public ResponseEntity<?> getLessons(@RequestBody ResultDto resultsDto) {
         System.out.println("CabinetController(cabinet/save-results): resultsDto=" + resultsDto);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        ResultDto resultDto = cabinetService.saveResults(resultsDto, username);
-        System.out.println("CabinetController(cabinet/save-results): return ResultDto=" + resultDto);
-        return resultDto;
+        ResponseEntity<?> result = resultService.saveResult(username, resultsDto);
+        System.out.println("CabinetController(cabinet/save-results): return result=" + result);
+        return result;
     }
 
 }
