@@ -82,38 +82,38 @@ public class CabinetService {
         return CourseDto.getInstanceWithLessons(course, lessonLimit);
     }
 
-    public ResultDto saveResults(List<ResultDto> results, String username) {
-        User user = userRepository.findByUsername(username).orElseThrow();
-        LocalDateTime now = LocalDateTime.now();
-        Long lessonId = null;
-        int sumResult = 0;
-        for (ResultDto result : results) {
-            //Content content = contentRepository.findById(result.getContentId()).orElseThrow();
-            ContentSentence sentence = contentSentenceRepository.findById(result.getSentenceId()).orElseThrow();
-            Content content = sentence.getContent();
-            lessonId = content.getMenuItem().getLesson().getId();
-            Lesson lesson = lessonRepository.findById(lessonId).orElseThrow();
-
-            Result newResult = new Result();
-            newResult.setUser(user);
-            newResult.setContent(content);
-            newResult.setLesson(lesson);
-            newResult.setSentence(sentence);
-            newResult.setDateTime(now);
-            newResult.setNumAnswer(result.getNumAnswer());
-
-            if ("tests".equalsIgnoreCase(content.getType().getName())) {
-                int resItem = result.getNumAnswer() == sentence.getCorrectCase() ? 1 : 0;
-                sumResult += resItem;
-            } else {
-
-            }
-            resultRepository.save(newResult);
-        }
-        int r = 100 * sumResult / results.size();
-        ResultDto finalResult = new ResultDto();
-        finalResult.setNumAnswer(r);
-        return finalResult;
-    }
+//    public ResultDto saveResults(List<ResultDto> results, String username) {
+//        User user = userRepository.findByUsername(username).orElseThrow();
+//        LocalDateTime now = LocalDateTime.now();
+//        Long lessonId = null;
+//        int sumResult = 0;
+//        for (ResultDto result : results) {
+//            //Content content = contentRepository.findById(result.getContentId()).orElseThrow();
+//            ContentSentence sentence = contentSentenceRepository.findById(result.getSentenceId()).orElseThrow();
+//            Content content = sentence.getContent();
+//            lessonId = content.getMenuItem().getLesson().getId();
+//            Lesson lesson = lessonRepository.findById(lessonId).orElseThrow();
+//
+//            Result newResult = new Result();
+//            newResult.setUser(user);
+//            newResult.setContent(content);
+//            newResult.setLesson(lesson);
+//            newResult.setSentence(sentence);
+//            newResult.setDateTime(now);
+//            newResult.setNumAnswer(result.getNumAnswer());
+//
+//            if ("tests".equalsIgnoreCase(content.getType().getName())) {
+//                int resItem = result.getNumAnswer() == sentence.getCorrectCase() ? 1 : 0;
+//                sumResult += resItem;
+//            } else {
+//
+//            }
+//            resultRepository.save(newResult);
+//        }
+//        int r = 100 * sumResult / results.size();
+//        ResultDto finalResult = new ResultDto();
+//        finalResult.setNumAnswer(r);
+//        return finalResult;
+//    }
 
 }
