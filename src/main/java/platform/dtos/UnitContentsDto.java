@@ -1,15 +1,14 @@
 package platform.dtos;
 
 import lombok.Data;
-import platform.entities.MenuItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class LessonContentsDto {
+public class UnitContentsDto {
     private Long activeMenuId;
     private List<MenuItemDto> menuItems;
     private List<ContentDto> contents = new ArrayList<>();
-    private String lessonName;
+    private String unitName;
 }
