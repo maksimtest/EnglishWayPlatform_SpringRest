@@ -6,7 +6,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import platform.dtos.*;
 import platform.services.CabinetService;
@@ -43,28 +42,28 @@ public class CabinetController {
         return coursesDto;
     }
 
-    @PostMapping("/get-lessons")
-    public CourseDto getLessons(@RequestBody CourseDto courseDto) {
-        System.out.println("CabinetController(get-lessons), courseDto=" + courseDto);
+    @PostMapping("/get-units")
+    public CourseDto getUnits(@RequestBody CourseDto courseDto) {
+        System.out.println("CabinetController(get-units), courseDto=" + courseDto);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        System.out.println("CabinetController(get-lessons), username: " + username);
+        System.out.println("CabinetController(get-units), username: " + username);
         CourseDto dto = cabinetService.getCourseLessonsForStudent(courseDto.getId(), username);
-        System.out.println("CabinetController(get-lessons), courseDto=" + dto);
+        System.out.println("CabinetController(get-units), courseDto=" + dto);
         return dto;
     }
 
     @PostMapping("/get-contents")
-    public LessonContentsDto getLessons(@RequestBody LessonMenuDto lessonMenuDto) {
-        System.out.println("CabinetController(get-contents): lessonMenuDto=" + lessonMenuDto);
+    public UnitContentsDto getContents(@RequestBody UnitMenuDto unitMenuDto) {
+        System.out.println("CabinetController(get-contents): unitMenuDto=" + unitMenuDto);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        LessonContentsDto lessonContentDto = contentService.getLessonContents(lessonMenuDto, username, false);
-        System.out.println("CabinetController(get-contents): return lessonContentDto=" + lessonContentDto);
+        UnitContentsDto lessonContentDto = contentService.getLessonContents(unitMenuDto, username, false);
+        System.out.println("CabinetController(get-contents): return unitContentDto=" + lessonContentDto);
         return lessonContentDto;
     }
     @PostMapping("/cabinet/save-results")
-    public ResponseEntity<?> getLessons(@RequestBody ResultDto resultsDto) {
+    public ResponseEntity<?> saveResults(@RequestBody ResultDto resultsDto) {
         System.out.println("CabinetController(cabinet/save-results): resultsDto=" + resultsDto);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();

@@ -48,12 +48,16 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/secured").authenticated()
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/info").hasAnyRole("MANAGER", "ADMIN")
-                        .requestMatchers("/admin").hasAnyRole(
+                        .requestMatchers("/info").permitAll()
+
+                        .requestMatchers("/open-api/**").permitAll()
+
+                                .requestMatchers("/admin").hasAnyRole(
                                 "MANAGER",
                                 "TEACHER",
                                 "CONTENT_MANAGER",
                                 "SUPER_CONTENT_MANAGER",
+                                "CONTENT_LT",
                                 "ADMIN")
                         .anyRequest().authenticated()
                         //.anyRequest().permitAll()

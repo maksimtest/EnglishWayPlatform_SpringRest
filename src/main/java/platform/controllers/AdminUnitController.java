@@ -10,23 +10,23 @@ import platform.services.CourseService;
 
 @RestController
 @RequiredArgsConstructor
-public class AdminLessonController {
+public class AdminUnitController {
     private final CourseService courseService;
     //private final LessonService lessonService;
 
     @PostMapping("admin/get-units")
-    public CourseDto getEditLessonsDto(@RequestBody CourseDto courseDto) {
-        System.out.println("AdminLessonController(get-lessons): CourseDto="+courseDto);
+    public CourseDto getUnits(@RequestBody CourseDto courseDto) {
+        System.out.println("AdminLessonController(get-units): CourseDto="+courseDto);
         CourseDto dto = courseService.getCourseByIdAndUsername(courseDto.getId(), null);
-        System.out.println("AdminLessonController(get-lessons): return dto="+dto);
+        System.out.println("AdminLessonController(get-units): return dto="+dto);
         return dto;
     }
 
     @PostMapping("admin/update-units")
-    public CourseDto updateLesson(@RequestBody CourseDto courseDto) {
-        System.out.println("AdminLessonController(update-lesson) post courseDto="+courseDto);
+    public CourseDto updateUnits(@RequestBody CourseDto courseDto) {
+        System.out.println("AdminLessonController(update-units) post courseDto="+courseDto);
         CourseDto resultCourseDto = courseService.updateCourse(courseDto);
-        System.out.println("AdminLessonController(update-lesson) return resultCourseDto="+resultCourseDto);
+        System.out.println("AdminLessonController(update-units) return resultCourseDto="+resultCourseDto);
         return courseDto;
     }
 }
