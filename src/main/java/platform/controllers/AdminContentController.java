@@ -8,19 +8,17 @@ import org.springframework.web.bind.annotation.RestController;
 import platform.dtos.*;
 import platform.services.ContentService;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 public class AdminContentController {
     private final ContentService contentService;
 
     @PostMapping("admin/get-contents")
-    public LessonContentsDto getLessonContents(@RequestBody LessonMenuDto lessonMenuDto) {
-        System.out.println("AdminContentController(get-contents): lessonMenuDto="+lessonMenuDto);
-        LessonContentsDto lessonContentDto = contentService.getLessonContents(lessonMenuDto, null, true);
-        System.out.println("AdminContentController(get-contents): return lessonContentDto="+lessonContentDto);
-        return lessonContentDto;
+    public UnitContentsDto getLessonContents(@RequestBody UnitMenuDto unitMenuDto) {
+        System.out.println("AdminContentController(get-contents): unitMenuDto="+unitMenuDto);
+        UnitContentsDto unitContentDto = contentService.getLessonContents(unitMenuDto, null, true);
+        System.out.println("AdminContentController(get-contents): return unitContentDto="+unitContentDto);
+        return unitContentDto;
     }
     @PostMapping("admin/create-content")
     public ContentDto createCourse(@RequestBody ContentDto contentDto) {
