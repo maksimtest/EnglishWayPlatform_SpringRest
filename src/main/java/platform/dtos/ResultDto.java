@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class ResultDto {
-    Long sentenceId;
-    int numAnswer;
+    Long contentId;
+    String answer;
+    int score;
 }

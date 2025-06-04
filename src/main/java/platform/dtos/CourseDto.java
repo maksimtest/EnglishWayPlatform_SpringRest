@@ -2,7 +2,7 @@ package platform.dtos;
 
 import lombok.Data;
 import platform.entities.Course;
-import platform.entities.Lesson;
+import platform.entities.Unit;
 import platform.entities.Level;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class CourseDto {
     private String level;
     private String codeLevel;
     private String complication;
-    private List<LessonDto> lessons = new ArrayList<>();
+    private List<UnitDto> units = new ArrayList<>();
 
     public static CourseDto getInstance(Course course) {
         CourseDto dto = new CourseDto();
@@ -33,11 +33,11 @@ public class CourseDto {
 
     public static CourseDto getInstanceWithLessons(Course course, int lessonLimit) {
         CourseDto dto = getInstance(course);
-        for (int i = 0; i < Math.min(lessonLimit, course.getLessons().size()); i++) {
-            Lesson lesson = course.getLessons().get(i);
-            dto.getLessons().add(LessonDto.getInstance(lesson));
+        for (int i = 0; i < Math.min(lessonLimit, course.getUnits().size()); i++) {
+            Unit lesson = course.getUnits().get(i);
+            dto.getUnits().add(UnitDto.getInstance(lesson));
         }
-        dto.getLessons().sort(Comparator.comparingInt(LessonDto::getNum));
+        dto.getUnits().sort(Comparator.comparingInt(UnitDto::getNum));
         return dto;
     }
 
@@ -58,31 +58,31 @@ public class CourseDto {
         if (level != null) {
             course.setLevel(level);
         }
-        if (lessons == null || lessons.isEmpty()) {
-            if (course.getLessons() != null && !course.getLessons().isEmpty()) {
-                course.getLessons().clear();
+        if (units == null || units.isEmpty()) {
+            if (course.getUnits() != null && !course.getUnits().isEmpty()) {
+                course.getUnits().clear();
             }
         } else {
             // Remove old sentence without referenced id
-            course.getLessons().removeIf(lesson ->
-                    lessons.stream().noneMatch(s -> s.getId() != null
-                                                    && s.getId().equals(lesson.getId()))
+            course.getUnits().removeIf(unit ->
+                    units.stream().noneMatch(s -> s.getId() != null
+                                                    && s.getId().equals(unit.getId()))
             );
-            System.out.println("before for by sentences, course.getLessons()=" + course.getLessons());
-            for (LessonDto dto : lessons) {
+            System.out.println("before for by sentences, course.getLessons()=" + course.getUnits());
+            for (UnitDto dto : units) {
                 boolean updated = false;
-                for (Lesson lesson : course.getLessons()) {
-                    if (Objects.equals(lesson.getId(), dto.getId())) {
+                for (Unit unit : course.getUnits()) {
+                    if (Objects.equals(unit.getId(), dto.getId())) {
                         updated = true;
-                        dto.updateLesson(lesson);
+                        dto.updateUnit(unit);
                         break;
                     }
                 }
                 if (!updated) {
-                    Lesson newLesson = new Lesson();
-                    newLesson.setCourse(course);
-                    dto.updateLesson(newLesson);
-                    course.getLessons().add(newLesson);
+                    Unit newUnit = new Unit();
+                    newUnit.setCourse(course);
+                    dto.updateUnit(newUnit);
+                    course.getUnits().add(newUnit);
                 }
             }
         }

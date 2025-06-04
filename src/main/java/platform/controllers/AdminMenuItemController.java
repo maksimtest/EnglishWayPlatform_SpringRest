@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import platform.dtos.ContainerIdDto;
-import platform.dtos.LessonMenuDto;
 import platform.dtos.MenuItemDto;
 import platform.services.MenuItemService;
 
@@ -17,33 +16,25 @@ import java.util.List;
 public class AdminMenuItemController {
     private final MenuItemService menuItemService;
 
-    //    @PostMapping("get-contents")
-//    public List<ContentDto> getContents(@RequestBody ContentDto contentDto) {
-//        System.out.println("AdminContentController(get-contents): post contentDto="+contentDto);
-//        List<ContentDto> list = contentService.getContents(contentDto);
-//        System.out.println("AdminContentController(get-contents): list="+list);
-//        return list;
-//    }
-    @PostMapping("admin/get-menu-items-by-lesson")
-    public List<MenuItemDto> createMenuItemByLesson(@RequestBody ContainerIdDto containerIdDto) {
-        System.out.println("AdminMenuItemController(admin/get-menu-items-by-lesson), containerIdDto=" + containerIdDto);
+    @PostMapping("admin/get-menu-items-by-unit")
+    public List<MenuItemDto> createMenuItemByUnit(@RequestBody ContainerIdDto containerIdDto) {
+        System.out.println("AdminMenuItemController(admin/get-menu-items-by-unit), containerIdDto=" + containerIdDto);
         List<MenuItemDto> list = menuItemService.getMenuItemsByLesson(containerIdDto.getId());
-        ;
         System.out.println("AdminMenuItemController(admin/get-menu-items-by-lesson) return list=" + list);
         return list;
     }
 
-    @PostMapping("admin/create-menu-item-for-lesson")
+    @PostMapping("admin/create-menu-item-for-unit")
     public MenuItemDto createForLesson(@RequestBody MenuItemDto menuItemDto) {
-        System.out.println("AdminMenuItemController(create-menu-item-for-lesson) post menuItemDto=" + menuItemDto);
+        System.out.println("AdminMenuItemController(create-menu-item-for-unit) post menuItemDto=" + menuItemDto);
         MenuItemDto resultMenuItemDto = menuItemService.createMenuItemsForLesson(menuItemDto);
-        System.out.println("AdminMenuItemController(create-menu-item-for-lesson) return resultMenuItemDto=" + resultMenuItemDto);
+        System.out.println("AdminMenuItemController(create-menu-item-for-unit) return resultMenuItemDto=" + resultMenuItemDto);
         return resultMenuItemDto;
     }
 
-    @PostMapping("admin/update-menu-items-for-lesson")
-    public List<MenuItemDto> updateMenuItemForLesson(@RequestBody List<MenuItemDto> menuItemDtoList) {
-        System.out.println("AdminMenuItemController(update-menu-item-for-lesson) post menuItemDtoList=" + menuItemDtoList);
+    @PostMapping("admin/update-menu-items-for-unit")
+    public List<MenuItemDto> updateMenuItemForUnit(@RequestBody List<MenuItemDto> menuItemDtoList) {
+        System.out.println("AdminMenuItemController(update-menu-item-for-unit) post menuItemDtoList=" + menuItemDtoList);
         List<MenuItemDto> result = menuItemService.updateMenuItemForLesson(menuItemDtoList);
         System.out.println("AdminMenuItemController(update-menu-item-for-lesson) return result=" + result);
         return result;

@@ -39,7 +39,7 @@ public class MainController {
         return "Admin catalog data";
     }
 
-    @GetMapping("/info")
+    @GetMapping("/info1")
     public String userData(Principal principal) {
         return principal.getName();
     }
