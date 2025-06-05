@@ -16,6 +16,6 @@ public interface MenuItemRepository extends CrudRepository<MenuItem, Long> {
 
     List<MenuItem> findByTypeAndRole(MenuType type, Role role);
 
-    @Query("SELECT item FROM MenuItem item WHERE item.lesson.id = :LessonId ORDER BY item.order ASC")
-    List<MenuItem> findByLessonId(Long LessonId);
+    @Query("SELECT item FROM MenuItem item WHERE item.unit.id = :LessonId ORDER BY item.order ASC")
+    List<MenuItem> findByUnitId(Long LessonId);
 }

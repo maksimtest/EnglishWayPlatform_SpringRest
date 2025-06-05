@@ -19,7 +19,7 @@ public class Course {
     @Column
     private String img;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "level_id", nullable = true)
     private Level level;
 
@@ -30,5 +30,5 @@ public class Course {
             fetch = FetchType.LAZY,
             cascade = CascadeType.ALL,
             orphanRemoval = true)
-    private List<Lesson> lessons;
+    private List<Unit> units;
 }

@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import platform.dtos.MenuItemDto;
 import platform.entities.*;
-import platform.repositories.LessonRepository;
+import platform.repositories.UnitRepository;
 import platform.repositories.MenuItemRepository;
 import platform.repositories.MenuTypeRepository;
 
@@ -15,7 +15,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class MenuItemService {
     private final MenuItemRepository menuItemRepository;
-    private final LessonRepository lessonRepository;
+    private final UnitRepository unitRepository;
     private final MenuTypeRepository menuTypeRepository;
 
     public Optional<MenuItem> findById(Long id) {
@@ -38,8 +38,8 @@ public class MenuItemService {
             return menuItemDtoList;
         }
 
-        Long lessonId = menuItemDtoList.get(0).getLessonId();
-        List<MenuItem> items = menuItemRepository.findByLessonId(lessonId);
+        Long lessonId = menuItemDtoList.get(0).getUnitId();
+        List<MenuItem> items = menuItemRepository.findByUnitId(lessonId);
         // step 1: delete from DB unreferenced menuItem instance
         for(MenuItem item : items){
             if(menuItemDtoList
@@ -49,7 +49,7 @@ public class MenuItemService {
         }
         // step 2: update
         MenuType type = menuTypeRepository.getLessonMenuType();
-        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow();
+        Unit lesson = unitRepository.findById(lessonId).orElseThrow();
         for(MenuItemDto itemDto: menuItemDtoList){
             MenuItem item = items
                     .stream()
@@ -62,7 +62,7 @@ public class MenuItemService {
         return getMenuItemsByLesson(lessonId);
     }
     public List<MenuItemDto> getMenuItemsByLesson(Long lessonId) {
-        List<MenuItem> items = menuItemRepository.findByLessonId(lessonId);
+        List<MenuItem> items = menuItemRepository.findByUnitId(lessonId);
         if (items == null || items.isEmpty()) {
             return createGroupMenuItemByLesson(lessonId);
         }
@@ -70,10 +70,10 @@ public class MenuItemService {
     }
 
     public MenuItemDto createMenuItemsForLesson(MenuItemDto menuItemDto) {
-        Long lessonId = menuItemDto.getLessonId();
+        Long lessonId = menuItemDto.getUnitId();
         MenuItem menuItem = new MenuItem();
         MenuType type = menuTypeRepository.getLessonMenuType();
-        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow();
+        Unit lesson = unitRepository.findById(lessonId).orElseThrow();
         menuItemDto.updateMenuItem(menuItem, type, lesson);
 
         menuItem = menuItemRepository.save(menuItem);
@@ -83,14 +83,14 @@ public class MenuItemService {
     public List<MenuItemDto> createGroupMenuItemByLesson(Long lessonId) {
         List<MenuItemDto> resultMenuItemDtoList = new ArrayList<>();
         MenuType type = menuTypeRepository.getLessonMenuType();
-        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow();
+        Unit lesson = unitRepository.findById(lessonId).orElseThrow();
 
         String[] names = new String[]{"Main", "Homework", "Grammar"};
         int i = 0;
 
         for (String name : names) {
             MenuItem menuItem = new MenuItem();
-            menuItem.setLesson(lesson);
+            menuItem.setUnit(lesson);
             menuItem.setName(name);
             menuItem.setOrder(++i);
             menuItem.setType(type);
