@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
 
-import java.util.Collection;
-
 @Data
 @Entity
 @Table(name="menu_items")
@@ -39,6 +37,6 @@ public class MenuItem {
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="lesson_id", nullable = true)
-    private Lesson lesson;
+    @JoinColumn(name="unit_id", nullable = true)
+    private Unit unit;
 }

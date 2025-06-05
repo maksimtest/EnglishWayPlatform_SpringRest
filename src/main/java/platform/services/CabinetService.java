@@ -5,11 +5,9 @@ import org.springframework.stereotype.Service;
 import platform.dtos.CabinetDto;
 import platform.dtos.CourseDto;
 import platform.dtos.MenuItemDto;
-import platform.dtos.ResultDto;
 import platform.entities.*;
 import platform.repositories.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,7 +21,7 @@ public class CabinetService {
     private final CourseRepository courseRepository;
     private final MenuTypeRepository menuTypeRepository;
     private final ResultRepository resultRepository;
-    private final LessonRepository lessonRepository;
+    private final UnitRepository lessonRepository;
     private final UserRepository userRepository;
     private final ContentSentenceRepository contentSentenceRepository;
     private final StudentActivityRepository studentActivityRepository;
