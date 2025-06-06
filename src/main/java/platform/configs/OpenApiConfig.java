@@ -27,7 +27,6 @@ public class OpenApiConfig {
 
     @Bean
     public OpenApiCustomizer serverOpenApiCustomizer() {
-        System.out.println("contextPath="+contextPath);
         return openApi -> openApi.setServers(List.of(new Server().url(contextPath)));
     }
 }

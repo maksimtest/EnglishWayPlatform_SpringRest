@@ -34,10 +34,8 @@ public class CabinetController {
 
     @PostMapping("/get-courses")
     public List<CourseDto> getCourses() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        System.out.println("CabinetController(get-courses), username: " + username);
-        List<CourseDto> coursesDto = cabinetService.getCoursesForStudent(username);
+        System.out.println("CabinetController(get-courses)");
+        List<CourseDto> coursesDto = cabinetService.getCoursesForStudentAndTeachers();
         System.out.println("CabinetController(get-courses), coursesDto=" + coursesDto);
         return coursesDto;
     }
@@ -45,10 +43,7 @@ public class CabinetController {
     @PostMapping("/get-units")
     public CourseDto getUnits(@RequestBody CourseDto courseDto) {
         System.out.println("CabinetController(get-units), courseDto=" + courseDto);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        System.out.println("CabinetController(get-units), username: " + username);
-        CourseDto dto = cabinetService.getCourseLessonsForStudent(courseDto.getId(), username);
+        CourseDto dto = cabinetService.getUnitsForUser(courseDto.getId());
         System.out.println("CabinetController(get-units), courseDto=" + dto);
         return dto;
     }

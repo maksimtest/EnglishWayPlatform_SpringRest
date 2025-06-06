@@ -23,9 +23,5 @@ public class LevelTestController {
         System.out.println("LevelTestController(level-tests) list="+list);
         return list;
     }
-//    @PostMapping("/admin/level-test")
-//    public List<LevelTest> getAdminLevelTest() {
-//        return levelTestService.getLevelTests();
-//    }
 
 }
