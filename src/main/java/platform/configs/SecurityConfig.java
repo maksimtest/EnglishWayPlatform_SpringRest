@@ -42,25 +42,23 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                //.cors(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configure(http))
 
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/secured").authenticated()
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/info").permitAll()
+//                                .requestMatchers("/secured").authenticated()
+                                .requestMatchers("/auth/**").permitAll()
+//                                .requestMatchers("/info").permitAll()
 
-                        .requestMatchers("/open-api/**").permitAll()
+                                .requestMatchers("/open-api/**").permitAll()
+                                .requestMatchers("/teacher").hasAnyRole("TEACHER")
 
                                 .requestMatchers("/admin").hasAnyRole(
-                                "MANAGER",
-                                "TEACHER",
-                                "CONTENT_MANAGER",
-                                "SUPER_CONTENT_MANAGER",
-                                "CONTENT_LT",
-                                "ADMIN")
-                        .anyRequest().authenticated()
-                        //.anyRequest().permitAll()
+                                        "MANAGER",
+                                        "CONTENT_MANAGER",
+                                        "SUPER_CONTENT_MANAGER",
+                                        "CONTENT_LT",
+                                        "ADMIN")
+                                .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptingHandling -> exceptingHandling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
@@ -107,13 +105,14 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:4200"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                config.setAllowedHeaders(List.of("*"));
+        config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
+
     @Bean
     public static PropertyPlaceholderAutoConfiguration propertyPlaceholderAutoConfiguration() {
         return new PropertyPlaceholderAutoConfiguration();//PropertySourcesPlaceholderConfigurer();

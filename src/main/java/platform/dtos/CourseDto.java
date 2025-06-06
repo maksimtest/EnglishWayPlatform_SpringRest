@@ -31,11 +31,11 @@ public class CourseDto {
         return dto;
     }
 
-    public static CourseDto getInstanceWithLessons(Course course, int lessonLimit) {
+    public static CourseDto getInstanceWithUnits(Course course, int unitLimit) {
         CourseDto dto = getInstance(course);
-        for (int i = 0; i < Math.min(lessonLimit, course.getUnits().size()); i++) {
-            Unit lesson = course.getUnits().get(i);
-            dto.getUnits().add(UnitDto.getInstance(lesson));
+        for (int i = 0; i < Math.min(unitLimit, course.getUnits().size()); i++) {
+            Unit unit = course.getUnits().get(i);
+            dto.getUnits().add(UnitDto.getInstance(unit));
         }
         dto.getUnits().sort(Comparator.comparingInt(UnitDto::getNum));
         return dto;

@@ -5,8 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import platform.dtos.ContainerIdDto;
 import platform.dtos.MenuItemDto;
+import platform.dtos.ParamIdDto;
 import platform.services.MenuItemService;
 
 import java.util.List;
@@ -17,9 +17,9 @@ public class AdminMenuItemController {
     private final MenuItemService menuItemService;
 
     @PostMapping("admin/get-menu-items-by-unit")
-    public List<MenuItemDto> createMenuItemByUnit(@RequestBody ContainerIdDto containerIdDto) {
-        System.out.println("AdminMenuItemController(admin/get-menu-items-by-unit), containerIdDto=" + containerIdDto);
-        List<MenuItemDto> list = menuItemService.getMenuItemsByLesson(containerIdDto.getId());
+    public List<MenuItemDto> createMenuItemByUnit(@RequestBody ParamIdDto paramId) {
+        System.out.println("AdminMenuItemController(admin/get-menu-items-by-unit), containerIdDto=" + paramId);
+        List<MenuItemDto> list = menuItemService.getMenuItemsByLesson(paramId.getId());
         System.out.println("AdminMenuItemController(admin/get-menu-items-by-lesson) return list=" + list);
         return list;
     }
