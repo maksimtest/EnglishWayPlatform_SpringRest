@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class ParamIdDto {
-    private Long value;
+    private Long id;
 }

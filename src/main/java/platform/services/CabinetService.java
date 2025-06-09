@@ -17,13 +17,10 @@ import java.util.stream.Collectors;
 public class CabinetService {
     private final UserService userService;
     private final MenuItemService menuItemService;
+    private final RoleService roleService;
 
     private final CourseRepository courseRepository;
     private final MenuTypeRepository menuTypeRepository;
-    private final ResultRepository resultRepository;
-    private final UnitRepository lessonRepository;
-    private final UserRepository userRepository;
-    private final ContentSentenceRepository contentSentenceRepository;
     private final StudentActivityRepository studentActivityRepository;
     private final SettingsRepository settingsRepository;
 
@@ -39,7 +36,7 @@ public class CabinetService {
 
         String strRoles = roles.stream()
                 .map(Role::getName)
-                .map(str -> str.substring("ROLE_".length()).toLowerCase())
+                .map(str -> str.substring("ROLE_" .length()).toLowerCase())
                 .collect(Collectors.joining(","));
 
         List<MenuItem> menuItems = menuItemService.getMenuByType(roles, menuTypeRepository.getMainMenuType());
@@ -48,36 +45,46 @@ public class CabinetService {
         return cabinetDto;
     }
 
-    public List<CourseDto> getCoursesForStudent(String username) {
-        User user = userService.findByUsername(username).orElseThrow();
-        Settings showByStudentActivitySettings = settingsRepository.findByCode("show_courses_if_student_activity_exists").orElseThrow();
-        boolean alwaysShowCourse = !showByStudentActivitySettings.isValue() ||
-                                   !userService.isStudent(user);
-        List<CourseDto> coursesDto = new ArrayList<>();
-        for (Course course : courseRepository.findAllByOrderByLevelIdAsc()) {
-            boolean isEmpty = studentActivityRepository.findByUserAndCourse(user, course).isEmpty();
-            if (alwaysShowCourse ||
-                !studentActivityRepository.findByUserAndCourse(user, course).isEmpty()) {
-                coursesDto.add(CourseDto.getInstance(course));
-            }
+    public List<CourseDto> getCoursesForStudentAndTeachers() {
+        // cabinet
+        // getCourses for Student
+        // getCourses for Teacher
+        User currentUser = userService.getCurrentUser();
+        Settings showCourseIfExistActivitySettings = settingsRepository.findByCode("show_courses_if_student_activity_exists").orElseThrow();
+
+        boolean showAllCourses = !showCourseIfExistActivitySettings.isValue() ||
+                                 !roleService.isStudentRolePresent(currentUser);
+
+        List<Course> courses;
+        if (showAllCourses) {
+            courses = courseRepository.findAllByOrderByLevelIdAsc();
+        } else {
+            courses = new ArrayList<>();
+            List<StudentActivity> list = studentActivityRepository.findAllByStudent(currentUser);
+            list.forEach(item -> courses.add(item.getCourse()));
         }
-        return coursesDto;
+        return courses.stream().map(CourseDto::getInstance).toList();
     }
 
-    public CourseDto getCourseLessonsForStudent(Long courseID, String username) {
+    public CourseDto getUnitsForUser(Long courseID) {
         Course course = courseRepository.findById(courseID).orElseThrow();
-        User user = userService.findByUsername(username).orElseThrow();
+        User user = userService.getCurrentUser();
 
         int lessonLimit = 1;
-        StudentActivity studentActivity = studentActivityRepository.findByUserAndCourse(user, course).orElse(null);
-        if (studentActivity == null) {
-            Settings accessFirstLessonSettings = settingsRepository.findByCode("always_access_first_lesson").orElseThrow();
-            lessonLimit = accessFirstLessonSettings.isValue() ? 1 : 0;
+        if(roleService.isStudentRolePresent(user)) {
+            StudentActivity studentActivity = studentActivityRepository.findByStudentAndCourse(user, course).orElse(null);
+
+            if (studentActivity == null) {
+                Settings accessFirstLessonSettings = settingsRepository.findByCode("always_access_first_lesson").orElseThrow();
+                lessonLimit = accessFirstLessonSettings.isValue() ? 1 : 0;
+            } else {
+                lessonLimit = studentActivity.getActiveUnitNum();
+            }
         } else {
-            lessonLimit = studentActivity.getActiveNumber();
+            lessonLimit = course.getUnits().size();
         }
 
-        return CourseDto.getInstanceWithLessons(course, lessonLimit);
+        return CourseDto.getInstanceWithUnits(course, lessonLimit);
     }
 
 //    public ResultDto saveResults(List<ResultDto> results, String username) {
