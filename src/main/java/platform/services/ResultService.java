@@ -9,9 +9,7 @@ import platform.entities.*;
 import platform.repositories.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +18,9 @@ public class ResultService {
     private final UserService userService;
     private final ContentRepository contentRepository;
 
+    public List<Result> getResultsByStudentAndUnit(User student, Unit unit){
+        return resultRepository.findAllByStudentAndUnit(student, unit);
+    }
     public void updateContentDto(List<ContentDto> contentsDto){
         Long userId = userService.getCurrentUser().getId();
         for(ContentDto contentDto : contentsDto){
@@ -42,8 +43,9 @@ public class ResultService {
             return ResponseEntity.ok().build();
         }
         Result newResult = new Result();
-        newResult.setUser(user);
+        newResult.setStudent(user);
         newResult.setContent(content);
+        newResult.setUnit(content.getMenuItem().getUnit());
         newResult.setAnswer(resultsDto.getAnswer());
         newResult.setDateTime(LocalDateTime.now());
         newResult.setScore(resultsDto.getScore());

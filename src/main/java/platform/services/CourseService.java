@@ -3,8 +3,6 @@ package platform.services;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import platform.dtos.CourseDto;
 import platform.entities.*;
@@ -37,8 +35,8 @@ public class CourseService {
             // not admin that need use limit
             User user = userService.findByUsername(username).orElseThrow();
             // TODO: limited course by user
-            StudentActivity activity = studentActivityRepository.findByUserAndCourse(user, course).orElseThrow();
-            lessonLimit = Math.max(activity.getActiveNumber(),activity.getPaymentCount());
+            StudentActivity activity = studentActivityRepository.findByStudentAndCourse(user, course).orElseThrow();
+            lessonLimit = Math.max(activity.getActiveUnitNum(),activity.getPaymentCount());
         }
         History history = new History();
         history.setUser(userService.getCurrentUser());
@@ -47,7 +45,7 @@ public class CourseService {
         history.setDate(LocalDateTime.now());
         historyRepository.save(history);
 
-        return CourseDto.getInstanceWithLessons(course, lessonLimit);
+        return CourseDto.getInstanceWithUnits(course, lessonLimit);
     }
 
     public List<CourseDto> getCoursesDto() {
@@ -80,7 +78,7 @@ public class CourseService {
         System.out.println("CourseService.updateCourse_2, courseDto: " + courseDto);
         System.out.println("CourseService.updateCourse_3, course: " + course);
         course = courseRepository.save(course);
-        return CourseDto.getInstanceWithLessons(course, 1000);
+        return CourseDto.getInstanceWithUnits(course, 1000);
     }
 
     public ResponseEntity<?> deleteCourse(Long id) {

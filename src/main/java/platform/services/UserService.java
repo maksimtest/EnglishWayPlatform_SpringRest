@@ -3,7 +3,6 @@ package platform.services;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import platform.dtos.RegistrationUserDto;
-import platform.dtos.StudentsDto;
 import platform.entities.Role;
 import platform.entities.User;
 import platform.repositories.RoleRepository;
@@ -47,7 +46,14 @@ public class UserService implements UserDetailsService {
     public List<User> listStudents(){
         List<User> users = userRepository.findAllByOrderByIdDesc()
                 .stream()
-                .filter(this::isStudent)
+                .filter(roleService::isStudentRolePresent)
+                .toList();
+        return users;
+    }
+    public List<User> listTeachers(){
+        List<User> users = userRepository.findAllByOrderByIdDesc()
+                .stream()
+                .filter(roleService::isTeacherRolePresent)
                 .toList();
         return users;
     }
@@ -57,14 +63,7 @@ public class UserService implements UserDetailsService {
     public User findById(Long userId) {
         return userRepository.findById(userId).orElseThrow();
     }
-    public boolean isStudent(User user){
-        for(Role role: user.getRoles()){
-            if(role.getName().equalsIgnoreCase("ROLE_STUDENT")){
-                return true;
-            }
-        }
-        return false;
-    }
+
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -91,7 +90,7 @@ public class UserService implements UserDetailsService {
         user.setActive(false);
         user.setActivationCode(code);
         user.setCodeExpiration(timesUtil.getRegMinuteExpiration());
-        user.setRoles(List.of(roleService.getUserRole()));
+        user.setRoles(List.of(roleService.getStudentRole()));
         return userRepository.save(user);
     }
     public User quickCreateNewUser(RegistrationUserDto registrationUserDto) {
@@ -103,7 +102,7 @@ public class UserService implements UserDetailsService {
         user.setActive(true);
         //user.setActivationCode(code);
         //user.setCodeExpiration(timesUtil.getRegMinuteExpiration());
-        user.setRoles(List.of(roleService.getUserRole()));
+        user.setRoles(List.of(roleService.getStudentRole()));
         return userRepository.save(user);
     }
     public void changePasswordWithoutSaving(User user, String password) {
